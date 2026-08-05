@@ -14,8 +14,6 @@ def get_playlist_id():
         url = f"https://youtube.googleapis.com/youtube/v3/channels?part=contentDetails&forHandle={CHANNEL_HANDLE}&key={API_KEY} "
 
         response = requests.get(url)
-        print(response)
-
         data = response.json()
         #py obj to json string
        # print(json.dumps(data, indent = 4))
@@ -75,7 +73,7 @@ def extract_video_data(video_ids):
         
         #next(gen fun) in background
         for batch in batch_video_list(video_ids, MAX_RESULTS):
-            print(f"  outer loop: got batch {batch}")
+            print(f"  outer loop: got batch", len(batch))
             video_id_str = ",".join(batch)
             
             url = f"https://youtube.googleapis.com/youtube/v3/videos?part=contentDetails&part=statistics&part=snippet&id={video_id_str}&key={API_KEY}"
@@ -100,13 +98,14 @@ def extract_video_data(video_ids):
                     }
 
                 extracted_data.append(video_data)
+                
+        return extracted_data
             
     except requests.exceptions.RequestException as e:
         raise e  
 
 def save_to_json(extracted_data):
     file_path = f"./data/YT_data_{date.today()}"
-    
     with open(file_path, "w", encoding="utf-8") as json_output:
         json.dump(extracted_data, json_output, indent=4, ensure_ascii=False)
 
