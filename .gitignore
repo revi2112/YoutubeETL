@@ -4,3 +4,5 @@ __pycache__/
 notes.md
 .venv
 logs/
+notes
+.DS_Store

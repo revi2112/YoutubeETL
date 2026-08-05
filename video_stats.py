@@ -83,7 +83,7 @@ def extract_video_data(video_ids):
             response = requests.get(url)
             data = response.json()
             
-            for item in data.get("items", []):
+            for item in data.get("items", []  ):
                 video_id = item["id"]
                 snippet = item['snippet']
                 contentDetails = item["contentDetails"]
