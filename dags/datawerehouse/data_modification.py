@@ -80,8 +80,8 @@ def update_rows(cur, conn, schema, row):
 
 def delete_rows(cur, conn, schema, ids_to_delete):
     try:
-        
-        ids_to_delete = f"({', '.join(f"'{id}'" for id in ids_to_delete)})"
+        #sql single quote {} -> take that python part as it is 
+        ids_to_delete = f"({', '.join(f"'{id}'" for id in ids_to_delete)})" 
 
         cur.execute(
             f"""
