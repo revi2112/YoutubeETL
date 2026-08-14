@@ -8,7 +8,7 @@ def insert_rows(cur, conn, schema, row):
         if schema == "staging":
             
             video_id = "video_id"
-
+        #key names are as per json data 
             cur.execute(
               f"""
               INSERT INTO {schema}.{table}("Video_ID", "Video_Title", "Upload_Date", "Duration", "Video_Views", "Likes_Count", "Comments_Count")
@@ -20,16 +20,15 @@ def insert_rows(cur, conn, schema, row):
             
         else:
             #core schema
-            video_id = "video_ID"
+            video_id = "Video_ID" #id from the staging layer
 
             cur.execute(
-              f"""
-              INSERT INTO {schema}.{table}("Video_ID", "Video_Title", "Upload_Date", "Duration", "Video_Views", "Likes_Count", "Comments_Count")
-              VALUES (%(video_id)s, %(title)s, %(publishedAt)s, %(duration)s, %(viewCount)s, %(likeCount)s, %(commentCount)s);
-              """, 
-              row,  
-                
-            )            
+                f"""
+                INSERT INTO {schema}.{table}("Video_ID", "Video_Title", "Upload_Date", "Duration", "Video_Type", "Video_Views", "Likes_Count", "Comments_Count")
+                VALUES (%(Video_ID)s, %(Video_Title)s, %(Upload_Date)s, %(Duration)s, %(Video_Type)s, %(Video_Views)s, %(Likes_Count)s, %(Comments_Count)s)
+                """,
+                row,
+            )       
         conn.commit()
         
         logger.info(f"Inserted row with Video_ID: {row[video_id]}")
@@ -41,7 +40,7 @@ def insert_rows(cur, conn, schema, row):
 
 def update_rows(cur, conn, schema, row):
     try:
-         # staging
+         # staging varianbles based on json data
         if schema == "staging":
             video_id = "video_id"
             upload_date = "publishedAt"
@@ -49,7 +48,7 @@ def update_rows(cur, conn, schema, row):
             video_views = "viewCount"
             likes_count = "likeCount"
             comments_count = "commentCount"
-        # core
+        # core variables based on staging layer
         else:
             video_id = "Video_ID"
             upload_date = "Upload_Date"
