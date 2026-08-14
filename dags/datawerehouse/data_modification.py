@@ -19,8 +19,8 @@ def insert_rows(cur, conn, schema, row):
             )
             
         else:
-            
-            video_id = "video_id"
+            #core schema
+            video_id = "video_ID"
 
             cur.execute(
               f"""
