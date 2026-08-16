@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 def load_data():
     
-    file_path = f"./data/YT_data_{date.today()}.json"
+    file_path = f"./data/YT_data_{date.today()}"
     
     try:
         

@@ -1,5 +1,5 @@
 from airflow import DAG
-from dags.datawerehouse.dwh import core_table, staging_table
+from datawerehouse.dwh import core_table, staging_table
 import pendulum
 from datetime import datetime, timedelta
 from api.video_stats import (

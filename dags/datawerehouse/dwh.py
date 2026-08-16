@@ -72,9 +72,7 @@ def core_table():
         # get video ids  check if id from json not in video ids
         
         # stagging to core  so get data from staging
-        
-        YT_data = load_data()
-        
+                
         create_schema(schema)
         create_table(schema)
         

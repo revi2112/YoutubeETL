@@ -18,7 +18,7 @@ def close_conn_cursor(conn, cur):
 def create_schema(schema):
     conn, cur = get_conn_cursor()
     
-    schema_sql = f"CREATE SCHEMA IS NOT EXISTS {schema};"
+    schema_sql = f"CREATE SCHEMA IF NOT EXISTS {schema};"
     cur.execute(schema_sql)
     conn.commit()
     
@@ -33,8 +33,8 @@ def create_table(schema):
         schema_sql = f"""
                     CREATE TABLE IF NOT EXISTS {schema}.{table}(
                         
-                        "Video_ID" VARCHAR(11) PRIMARY KEY NOT NULL,
-                        "Video_Title" VARCHAR(11) NOT NULL, 
+                        "Video_I ̰D" VARCHAR(200) PRIMARY KEY NOT NULL,
+                        "Video_Title" TEXT NOT NULL, 
                         "Upload_Date" TIMESTAMP NOT NULL,
                         "Duration" VARCHAR(20) NOT NULL,
                         "Video_Views" INT,
@@ -44,13 +44,13 @@ def create_table(schema):
         
                     """
     else:
-        table_sql = f"""
+        schema_sql = f"""
                   CREATE TABLE IF NOT EXISTS {schema}.{table} (
-                      "Video_ID" VARCHAR(11) PRIMARY KEY NOT NULL,
+                      "Video_ID" VARCHAR(200) PRIMARY KEY NOT NULL,
                       "Video_Title" TEXT NOT NULL,
                       "Upload_Date" TIMESTAMP NOT NULL,
                       "Duration" TIME NOT NULL,
-                      "Video_Type" VARCHAR(10) NOT NULL,
+                      "Video_Type" VARCHAR(20) NOT NULL,
                       "Video_Views" INT,
                       "Likes_Count" INT,
                       "Comments_Count" INT    
@@ -61,7 +61,6 @@ def create_table(schema):
     conn.commit()
     
     close_conn_cursor(conn, cur)
-    
 
 def get_video_ids(cur, schema):
     

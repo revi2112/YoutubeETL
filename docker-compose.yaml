@@ -142,7 +142,7 @@ services:
       # - POSTGRES_CONN_HOST=${POSTGRES_CONN_HOST}
       # - POSTGRES_CONN_PORT=${POSTGRES_CONN_PORT}
     ports:
-      - 5432:5432
+      - 5433:5432
     volumes:
     #ensure data persistance using named volume all postgress data data from celery yt api etc
     # volume make sures that data is stored even if container is down
