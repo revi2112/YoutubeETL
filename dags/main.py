@@ -1,5 +1,6 @@
 from airflow import DAG
 from datawerehouse.dwh import core_table, staging_table
+from dataquality.soda import yt_elt_data_quality
 import pendulum
 from datetime import datetime, timedelta
 from api.video_stats import (
@@ -58,3 +59,20 @@ with DAG(
     #defining dependencies in dag
     
     update_stagging_table >> update_core_table
+
+
+#data quality 
+with DAG(
+    dag_id = "data_quality",
+    default_args = default_args,
+    description = "DAG to check data quality on both schema",
+    schedule = "0 16 * * *", #cron tab guru
+    catchup = False # not to catch up missed 
+) as dag_produce:
+    
+      # Define tasks
+    soda_validate_staging = yt_elt_data_quality("staging")
+    soda_validate_core = yt_elt_data_quality("core")
+
+    # Define dependencies
+    soda_validate_staging >> soda_validate_core
