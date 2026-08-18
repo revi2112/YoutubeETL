@@ -12,6 +12,7 @@ checks for yt_api:
 
   - comments_count_greater_than_vid_views = 0:
       name: Check if Comments_Count greater than Video_Views 
+      comments_count_greater_than_vid_views query: |
         select count(*) from yt_api where "Comments_Count" > "Video_Views"
 
 
