@@ -11,3 +11,20 @@ def test_postgres_conn(mock_postgres_conn_vars):
     assert conn.host == "mock_host"
     assert conn.port == 1234
     assert conn.schema == "mock_db_name"
+    
+def test_dag_intergrity(dagbag):
+    
+    #1. 
+    assert dagbag.import_errors == {}, f"Import errors found:{dagbag.import_errors}"
+    print("===========")
+    print(dagbag.import_errors)
+
+
+    #2.
+    excepted_dag_id = ["produce_json", "update_db", "data_quality"]
+    dag_ids = list(dagbag.dags.keys())
+    print("===========")
+    print(dagbag.dags.keys())
+    
+    for dg_id in excepted_dag_id:
+        assert dg_id in dag_ids, f"DAG {dg_id} is missing."
