@@ -14,13 +14,13 @@ def test_postgres_conn(mock_postgres_conn_vars):
     
 def test_dag_intergrity(dagbag):
     
-    #1. 
+    #1. check import errors
     assert dagbag.import_errors == {}, f"Import errors found:{dagbag.import_errors}"
     print("===========")
     print(dagbag.import_errors)
 
 
-    #2.
+    #2. chck dag
     excepted_dag_id = ["produce_json", "update_db", "data_quality"]
     dag_ids = list(dagbag.dags.keys())
     print("===========")
@@ -28,3 +28,24 @@ def test_dag_intergrity(dagbag):
     
     for dg_id in excepted_dag_id:
         assert dg_id in dag_ids, f"DAG {dg_id} is missing."
+        
+    #3. validate count
+    assert dagbag.size() == 3
+    print("===========")
+    print(dagbag.size())
+    
+    #4. check task
+    expected_task_counts = {
+        "produce_json": 5,
+        "update_db": 3,
+        "data_quality": 2,
+    }
+    print("===========")
+    
+    for dag_id, dag in dagbag.dags.items():
+        expected_count = expected_task_counts[dag_id]
+        actual_count = len(dag.tasks)
+        assert (
+            expected_count == actual_count
+        ), f"DAG {dag_id} has {actual_count} tasks, expected {expected_count}."
+        print(dag_id, len(dag.tasks))  
