@@ -3,6 +3,8 @@ from datawerehouse.dwh import core_table, staging_table
 from dataquality.soda import yt_elt_data_quality
 import pendulum
 from datetime import datetime, timedelta
+from airflow.operators.trigger_dagrun import TriggerDagRunOperator
+
 from api.video_stats import (
     get_playlist_id,
     get_video_ids,
@@ -34,7 +36,7 @@ with DAG(
     description = "DAG to produce JSON file with raw data",
     schedule = "0 14 * * *", #cron tab guru
     catchup = False # not to catch up missed 
-) as dag_produce:
+) as dag_update:
     
     playlist_id = get_playlist_id()
     video_ids = get_video_ids(playlist_id)
@@ -42,7 +44,10 @@ with DAG(
     save_to_json_task = save_to_json(extract_data)
     
     #defining dependencies in dag
-    
+    trigger_update_db = TriggerDagRunOperator(
+        task_id="trigger_update_db",
+        trigger_dag_id="update_db",
+    )
     playlist_id >> video_ids >> extract_data >> save_to_json_task
     
 #load     
@@ -50,14 +55,18 @@ with DAG(
     dag_id = "update_db",
     default_args = default_args,
     description = "DAG to process JSON file and insert data into both staging and core schemas",
-    schedule = "0 15 * * *", #cron tab guru
+    schedule = None, #cron tab guru
     catchup = False # not to catch up missed 
 ) as dag_produce:
     
     update_stagging_table = staging_table()
     update_core_table = core_table()
     #defining dependencies in dag
-    
+    trigger_data_quality = TriggerDagRunOperator(
+        task_id="trigger_data_quality",
+        trigger_dag_id="data_quality",
+    )
+
     update_stagging_table >> update_core_table
 
 
@@ -66,9 +75,9 @@ with DAG(
     dag_id = "data_quality",
     default_args = default_args,
     description = "DAG to check data quality on both schema",
-    schedule = "0 16 * * *", #cron tab guru
+    schedule = None, #cron tab guru
     catchup = False # not to catch up missed 
-) as dag_produce:
+) as dag_quality:
     
       # Define tasks
     soda_validate_staging = yt_elt_data_quality("staging")

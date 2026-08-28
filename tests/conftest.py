@@ -39,6 +39,7 @@ def dagbag():
 
 @pytest.fixture()
 def airflow_variable():
+    #wrap it the helper fun inside another function as fixture
     def get_airflow_variable(variable_name):
         env_var = f"AIRFLOW_VAR_{variable_name.upper()}"
         return os.getenv(env_var)
