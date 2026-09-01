@@ -105,7 +105,7 @@ jobs:
 
     - name: Debug - list postgres roles
       if: steps.changed-files-tests.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
-      run: docker exec postgres psql -U ${{ vars.POSTGRES_CONN_USERNAME }} -d postgres -c "\du"
+      run: docker exec postgres psql -U ${{ secrets.POSTGRES_CONN_USERNAME }} -d postgres -c "\du"
     - name: Run Unit and Integration Test 
       if: steps.changed-files-tests.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
       run: docker exec -t airflow-worker sh -c  "pytest tests/ -v"
