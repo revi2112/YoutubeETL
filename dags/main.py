@@ -48,7 +48,7 @@ with DAG(
         task_id="trigger_update_db",
         trigger_dag_id="update_db",
     )
-    playlist_id >> video_ids >> extract_data >> save_to_json_task
+    playlist_id >> video_ids >> extract_data >> save_to_json_task >> trigger_update_db
     
 #load     
 with DAG(
@@ -67,7 +67,7 @@ with DAG(
         trigger_dag_id="data_quality",
     )
 
-    update_stagging_table >> update_core_table
+    update_stagging_table >> update_core_table >> trigger_data_quality
 
 
 #data quality 

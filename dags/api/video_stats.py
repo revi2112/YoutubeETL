@@ -75,13 +75,11 @@ def extract_video_data(video_ids):
         #yield pauses the excustion and return the res to the iterator
         def batch_video_list(video_id_lst, batch_size):
             for i in range(0, len(video_id_lst), batch_size):
-                print(f"generator: about to yield slice starting at {i}")
+
                 yield video_id_lst[i: i + batch_size] #[0:50] pause [50:100] pause ...
-                print(f"generator: resumed after yield, i was {i}")
         
         #next(gen fun) in background
         for batch in batch_video_list(video_ids, MAX_RESULTS):
-            print(f"  outer loop: got batch", len(batch))
             video_id_str = ",".join(batch)
             
             url = f"https://youtube.googleapis.com/youtube/v3/videos?part=contentDetails&part=statistics&part=snippet&id={video_id_str}&key={API_KEY}"
