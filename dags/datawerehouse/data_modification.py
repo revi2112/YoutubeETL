@@ -86,7 +86,7 @@ def delete_rows(cur, conn, schema, ids_to_delete):
 
         cur.execute(
             f"""
-            delete from {schema}.{table} where "videoID" in {ids_to_delete};
+            delete from {schema}.{table} where "video_ID" in {ids_to_delete};
             """
         )
         conn.commit()

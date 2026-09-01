@@ -33,7 +33,7 @@ def create_table(schema):
         schema_sql = f"""
                     CREATE TABLE IF NOT EXISTS {schema}.{table}(
                         
-                        "Video_I ̰D" VARCHAR(200) PRIMARY KEY NOT NULL,
+                        "Video_ID" VARCHAR(200) PRIMARY KEY NOT NULL,
                         "Video_Title" TEXT NOT NULL, 
                         "Upload_Date" TIMESTAMP NOT NULL,
                         "Duration" VARCHAR(20) NOT NULL,
