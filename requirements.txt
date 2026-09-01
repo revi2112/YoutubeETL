@@ -2,4 +2,4 @@ python-dotenv==1.2.2
 requests==2.34.2
 urllib3==2.7.0
 soda-core-postgres==3.3.14
-pytest==8.3.2
+pytest==8.3.3

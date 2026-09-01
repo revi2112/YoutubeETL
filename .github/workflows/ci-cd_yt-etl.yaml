@@ -85,7 +85,7 @@ jobs:
         files: |
             dags/**
             include/**
-            test/**
+            tests/**
             docker-compose.yaml
     - name: Set UP Docker compose
       if: steps.changed-files-tests.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
@@ -96,9 +96,9 @@ jobs:
     - name: Run End to End Dag Test 
       if: steps.changed-files-tests.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
       run: |
-        Dag_ids = ("produce_json" "update_db" "data_quality")
+        Dag_ids=("produce_json" "update_db" "data_quality")
         for id in "${Dag_ids[@]}"; do
-          docker exec -t airflow-worker sh -c  "airflow dags test $DAG"
+          docker exec -t airflow-worker sh -c  "airflow dags test $id"
         done
     - name: Tear down Docker Compose
       if: steps.changed-files-tests.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
