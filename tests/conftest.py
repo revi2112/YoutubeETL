@@ -14,11 +14,11 @@ def api_key():
 #v=bug fix typ0 changed
 @pytest.fixture      
 def channel_handle():
-    with mock.patch.dict("os.envrion", AIRFLOW_VAR_CHANNEL_HANDLE="MRCHEESE"):
+    with mock.patch.dict("os.environ", AIRFLOW_VAR_CHANNEL_HANDLE="MRCHEESE"):
         yield Variable.get("CHANNEL_HANDLE")
         
 @pytest.fixture
-def mock_postgres_conn_var():
+def mock_postgres_conn_vars():
     conn = Connection(
         login = "mock_username", 
         password = "mock_password", 
