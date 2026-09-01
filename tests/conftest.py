@@ -11,7 +11,7 @@ def api_key():
 # library used to temporarily set, update, or clear values inside a dictionary or dictionary-like object (such as os.environ) during a test.
 # It automatically restores the dictionary to its original state when the test block or function ends.
 #AIRFLOW_VAR_API_KEY -> airflow var var name is api_key and Variable is used to fecth that
-
+#v=bug fix typio
 @pytest.fixture      
 def channel_handle():
     with mock.patch.dict("os.envrion", AIRFLOW_VAR_CHANNEL_HANDLE="MRCHEESE"):
