@@ -90,6 +90,9 @@ jobs:
     - name: Set UP Docker compose
       if: steps.changed-files-tests.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
       run: docker compose up -d
+    - name: Debug - postgres init logs
+      if: steps.changed-files-tests.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
+      run: docker logs postgres
     - name: Wait for postgres to be healthy
       if: steps.changed-files-tests.outputs.any_changed == 'true' || github.event_name == 'workflow_dispatch'
       run: |
