@@ -207,7 +207,7 @@ services:
       airflow-init:
         condition: service_completed_successfully
 
-# only one worker service is defined so only one worker container 
+# only one worker service is defined so only one worker container .
   airflow-worker:
     <<: *airflow-common
     command: celery worker
