@@ -141,7 +141,7 @@ services:
       - CELERY_BACKEND_PASSWORD=${CELERY_BACKEND_PASSWORD}
       - POSTGRES_CONN_HOST=${POSTGRES_CONN_HOST}
       - POSTGRES_CONN_PORT=${POSTGRES_CONN_PORT}
-      
+
     ports:
       - 5433:5432
     volumes:
@@ -303,8 +303,6 @@ services:
         chown -R "${AIRFLOW_UID}:0" /sources/{dags,data,include,logs,tests}
         exec /entrypoint airflow version 
     # yamllint enable rule:line-length
-
-    #
     environment:
       <<: *airflow-common-env
       _AIRFLOW_DB_MIGRATE: 'true'

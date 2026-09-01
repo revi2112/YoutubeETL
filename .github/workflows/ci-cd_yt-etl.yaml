@@ -15,7 +15,6 @@ jobs:
   #set up buildx;
   #login
   #docker build and push
-
   #every jobs needs a vm to run on
   build-and-push-image:
     runs-on: ubuntu-latest
