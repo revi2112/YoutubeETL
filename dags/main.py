@@ -9,9 +9,10 @@ from api.video_stats import (
     get_playlist_id,
     get_video_ids,
     extract_video_data,
-    save_to_json,
+    save_to_s3,
 )
 
+channel_handles = Variable.get("CHANNEL_HANDLES", deserialize_json = True)
 local_tz = pendulum.timezone("America/Chicago")
 
 #args that can reused
@@ -31,26 +32,38 @@ default_args = {
 
 # extract
 with DAG(
-    dag_id = "produce_json",
+    dag_id="produce_s3_snapshot",
     default_args = default_args,
-    description = "DAG to produce JSON file with raw data",
+    description="DAG to pull YouTube stats for each configured channel and land raw snapshots in S3",
     schedule = "0 14 * * *", #cron tab guru
     catchup = False # not to catch up missed 
 ) as dag_update:
     
-    playlist_id = get_playlist_id()
-    video_ids = get_video_ids(playlist_id)
-    extract_data = extract_video_data(video_ids)
-    save_to_json_task = save_to_json(extract_data)
+    #expand() for dynamic taks mapping, runs task for each instance in parlled and isolated and independed 
+    # in bg the map_index(len of list) will be created as a pointer Xcom(playlist id)
+    #instance with map_index=0 receives exactly the output from the get_playlist_id instance with map_index=0
+    playlist_id = get_playlist_id.expand(channel_handle=channel_handles)
+    video_ids = get_video_ids.expand(playlist_id)
+    extract_data = extract_video_data.expand(video_ids)
+    s3_keys = save_to_s3.expand(extract_data)
+    #s3_key is also xcom pointer with mapped output of 3 instances
+    #file path for obj inside bucket #reads this to load raw table
     
     #defining dependencies in dag
     trigger_update_db = TriggerDagRunOperator(
         task_id="trigger_update_db",
         trigger_dag_id="update_db",
+        conf = { #
+            "s3_keys": "{{ ti.xcom_pull(task_ids='save_to_s3') }}",
+            "snapshot_date": "{{ ds }}",
+        }
     )
-    playlist_id >> video_ids >> extract_data >> save_to_json_task >> trigger_update_db
+    s3_keys >> trigger_update_db
     
 #load     
+
+# 1. reads the S3 snapshot(s) written by produce_s3_snapshot and inserts them as new, append-only rows into raw.youtube_video_snapshots.
+# Replaces the old upsert/delete staging + core logic entirely - history now on.
 with DAG(
     dag_id = "update_db",
     default_args = default_args,
@@ -59,29 +72,28 @@ with DAG(
     catchup = False # not to catch up missed 
 ) as dag_produce:
     
-    update_stagging_table = staging_table()
-    update_core_table = core_table()
+    load_raw = load_raw_from_s3()
+ 
     #defining dependencies in dag
     trigger_data_quality = TriggerDagRunOperator(
         task_id="trigger_data_quality",
         trigger_dag_id="data_quality",
     )
 
-    update_stagging_table >> update_core_table >> trigger_data_quality
+    load_raw >> trigger_data_quality
 
 
 #data quality 
+#check raw for on then dbt
 with DAG(
     dag_id = "data_quality",
     default_args = default_args,
-    description = "DAG to check data quality on both schema",
+    description = "DAG to check data quality on raw schema",
     schedule = None, #cron tab guru
     catchup = False # not to catch up missed 
 ) as dag_quality:
     
       # Define tasks
-    soda_validate_staging = yt_elt_data_quality("staging")
-    soda_validate_core = yt_elt_data_quality("core")
+    soda_validate_raw = yt_elt_data_quality("raw")
 
     # Define dependencies
-    soda_validate_staging >> soda_validate_core

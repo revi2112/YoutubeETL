@@ -124,7 +124,7 @@ def save_to_s3(extracted_data, ds= None):
     channel_handle = extracted_data["channel_handle"]
     data = extracted_data["data"]
     
-    s3_key = f"raw/youtube/channel={channel_handle}/dt={ds}/videos.json" #file path for obj inside bucket
+    s3_key = f"raw/youtube/channel={channel_handle}/dt={ds}/videos.json" #file path for obj inside bucket #reads this to load raw table
     json_body = json.dumps(data,indent=4, ensure_ascii=False )
     
     hook = S3Hook(aws_conn_id=AWS_CONN_ID)
